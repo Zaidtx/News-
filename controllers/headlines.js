@@ -1,36 +1,70 @@
 const scrape = require("../script/scrape");
 const cheerio = require("cheerio");
 const express = require("express");
+var router = express.Router();
 const axios = require("axios");
 
 const Headline = require("../models/Headline");
 
-var app =express();
 
-app.get("/", function(req, res){
+router.get("/", function(req, res){
     res.redirect("/articles");
 })
-app.get("/articles", function(req,res){
+router.get("/articles", function(req,res){
     // get all info from db
+    Headline.find().sort({_id: -1})
+        .exec(function(err, data){
+            if(err){
+                console.log(err)
+            }
+            else{
+                var article = {article: data};
+                console.log(article)
+                res.render('saved', article)
+            }
+        })
 })
-app.get("/scrape", function(req, res){
+router.get("/scrape", function(req, res){
     axios.get("https://www.bbc.com/").then((res) => {
         const $ = cheerio.load(res.data);
 
-        var headlines = [];
+        var titleArray = [];
         $("li.media-list__item").each(function(i, element){
-            const title = $(element).find("a").text();
-            const link = $(element).find("a").attr("href");
-            const summary = $(element).find("p.media_summary").text();
+            var result ={}
+             result.title = $(element).find("a").text();
+             result.link = $(element).find("a").attr("href");
+             result.summary = $(element).find("p.media_summary").text();
 
-            var headLineToAdd = {
-                title: title,
-                link: link,
-                summary: summary,
-                saved: false
+            
+            if(result.title !== "" && result.summary !== ""){
+                if(titleArray.indexOf(result.title) == -1 ){
+                    titleArray.push(result.title);
+                    Headline.count({title: result.title}, function(err, test){
+                        if(test == 0){
+                            var newHeadline = new Headline(result);
+
+                            newHeadline.save(function(err, data){
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
+                                    console.log(data);
+                                }
+                            })
+                        }
+
+                    })
+                }
+                else{
+                    console.log("Article already existed in the DB")
+                }
             }
-            console.log(headLineToAdd)
-            Headline.insertMany(headLineToAdd);
+            else{
+                console.log("Missing data");
+            }
         });
+        res.redirect("/");
     })
 })
+
+module.exports = router;
