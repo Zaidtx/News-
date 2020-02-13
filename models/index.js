@@ -1,7 +1,7 @@
 
 module.exports = {
 
-    Article: require("./Article"),
-    comments: require("./comments")
+    Headline: require("./Headline"),
+    comments: require("./Comment")
     
 }

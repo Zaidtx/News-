@@ -1,6 +1,7 @@
 var express = require("express");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+var exphbs = require("express-handlebars");
 
 
 // Axios 
@@ -15,28 +16,31 @@ var PORT = 3000;
 
 // Inistialize Express 
 
-var app = exoress();
+var app = express();
 
 // configure middleware 
 
 // Use morgan logger for logging request
 
-app.use(logger("dev"));
+//      app.use(logger("dev"));
 
-app.use(express.urlencoded({ extended: ture}));
+app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
 
 app.use(express.static("public"));
+app.engine("handlebars",exphbs({defaultLayout: "main"}))
+app.set("view engineee", "handlebars");
+
+// registers routes
+var router = require("./controllers/headlines");
+app.use(router);
 
 // Connect to MongoDB
 
 mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true });
 
-app.get("/scrape", function(req,res){
-
-    axios.get("httpL//www.echojs.com/").then(function(response){
-var $ = cherrio.;onload(response.date);
-
-
-    })
+app.listen(PORT, function(){
+    console.log("App runnning on PORT: "+PORT)
 })
+
+
