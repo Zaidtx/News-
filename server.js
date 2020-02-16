@@ -22,11 +22,12 @@ app.use(express.static("public"));
 
 app.engine("handlebars",exphbs({
     defaultLayout: "main",
-    layoutsDir: path.join(__dirname, 'views/layouts')
+    layoutsDir: path.join(__dirname,  './views/layouts')
 
 }))
 app.set("view engine", "handlebars");
 app.set("views", 'views')
+
 
 // registers routes
 var router = require("./controllers/headlines");
@@ -35,6 +36,8 @@ app.use(router);
 // Connect to MongoDB
 
 mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true });
+
+
 
 app.listen(PORT, function(){
     console.log("App runnning on PORT: "+PORT)

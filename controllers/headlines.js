@@ -25,16 +25,16 @@ router.get("/articles", function(req,res){
         })
 })
 router.get("/scrape", function(req, res){
-    axios.get("https://www.bbc.com/").then((res) => {
-        const $ = cheerio.load(res.data);
+    axios.get("https://www.bbc.com/").then((response) => {
+        const $ = cheerio.load(response.data);
 
         var titleArray = [];
-        $("li.media-list__item").each(function(i, element){
+        $(".media__content").each(function(i, element){
             var result ={}
-             result.title = $(element).find("a").text();
+             result.title = $(element).find("a").text().trim();
              result.link = $(element).find("a").attr("href");
-             result.summary = $(element).find("p.media_summary").text();
-
+             result.summary = $(element).find("p.media__summary").text().trim();
+            console.log(result);
             
             if(result.title !== "" && result.summary !== ""){
                 if(titleArray.indexOf(result.title) == -1 ){
@@ -45,7 +45,7 @@ router.get("/scrape", function(req, res){
 
                             newHeadline.save(function(err, data){
                                 if(err){
-                                    console.log(err);
+                                   console.log(err);
                                 }
                                 else{
                                     console.log(data);
@@ -55,13 +55,11 @@ router.get("/scrape", function(req, res){
 
                     })
                 }
-                else{
-                    console.log("Article already existed in the DB")
-                }
+                
+                     console.log("Article already existed in the DB")
             }
-            else{
-                console.log("Missing data");
-            }
+                
+        
         });
         res.redirect("/");
     })
