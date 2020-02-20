@@ -2,11 +2,11 @@
     <div class="col-md-12">
         {{#each article}}
             <div class="card-panel">
-                <h4>{{this.title}}</h4>
+                {{#if this.title}}
+                <h4>Title: {{this.title}}</h4>
+                <h4>Summary: {{this.summary}}</h4>
                 <a href={{this.link}} >Link to the Article</a>
-                <form action="/save/{{this._id}}" method="POST">
-                   <button>Save Article</button>
-                </form>
+                {{/if}}
             </div>
         {{/each}}
     </div>

@@ -17,7 +17,8 @@ var HeadlineSchema = new Schema({
     },
     saved: {
         type:String,
-        required :true
+        required :true,
+        default: false
     },
     comment: {
         type: Schema.Types.ObjectId,
